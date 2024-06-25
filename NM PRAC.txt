@@ -1,0 +1,402 @@
+                                          ***** SIMPSON'S 1/3rd RULE *****
+
+def f(x):
+    return x**3 + 2*x**2 + x + 1
+def simpsons_one_third_rule(a, b, n):
+    if n % 2 != 0:
+        raise ValueError("Number of intervals 'n' must be even.")
+    
+    h = (b - a) / n
+    x = [a + i*h for i in range(n + 1)]
+    y = [f(xi) for xi in x]
+    
+    integral = y[0] + y[-1]
+    
+    for i in range(1, n):
+        if i % 2 == 0:
+            integral += 2 * y[i]
+        else:
+            integral += 4 * y[i]
+    
+    integral *= h / 3
+    
+    return integral
+
+result = simpsons_one_third_rule(a, b, n)
+print(f"Approximate integral using Simpson's 1/3 rule: {result}")
+
+
+                                          ********* SIMPSON'S 3/8th Rule *********
+def f(x):
+    return x**3 + 2*x**2 + x + 1
+
+def simpsons_three_eighth_rule(a, b, n):
+    if n % 3 != 0:
+        raise ValueError("Number of intervals 'n' must be a multiple of 3.")
+    
+    h = (b - a) / n
+    x = [a + i*h for i in range(n + 1)]
+    y = [f(xi) for xi in x]
+    
+    integral = y[0] + y[-1]
+    
+    for i in range(1, n):
+        if i % 3 == 0:
+            integral += 2 * y[i]
+        else:
+            integral += 3 * y[i]
+    
+    integral *= 3 * h / 8
+    
+    return integral
+
+result = simpsons_three_eighth_rule(a, b, n)
+print(f"Approximate integral using Simpson's 3/8 rule: {result}")
+
+
+
+                                            ********* TRAPEZOIDAL RULE *********
+def f(x):
+    return x**3 + 2*x**2 + x + 1
+
+def trapezoidal_rule(a, b, n):
+    h = (b - a) / n
+    
+    x = [a + i*h for i in range(n + 1)]
+    y = [f(xi) for xi in x]
+    
+    integral = (y[0] + y[-1]) / 2.0
+    for i in range(1, n):
+        integral += y[i]
+    
+    integral *= h
+    
+    return integral
+
+result = trapezoidal_rule(a, b, n)
+print(f"Approximate integral using the Trapezoidal rule: {result}")
+
+
+                                                ************ RK(2) ************
+
+def runge_kutta_second_order(dy_dx, x0, y0, h, xmax):
+
+    Parameters:
+        dy_dx (function): The function dy/dx = f(x, y).
+        x0 (float): Initial value of x.
+        y0 (float): Initial value of y corresponding to x0.
+        h (float): Step size.
+        xmax (float): Upper limit of the range of x.
+
+    Returns:
+        list: Lists of x and y values
+    x_values = [x0]
+    y_values = [y0]
+
+    while x0 < xmax:
+        k1 = h * dy_dx(x0 + h/2, y0 + h/2 * dy_dx(x0, y0))
+        y0 += k1
+        x0 += h
+        x_values.append(x0)
+        y_values.append(y0)
+
+    return x_values, y_values
+
+for x, y in zip(x_values, y_values):
+    print(f"x = {x:.2f}, y = {y:.6f}")
+
+                                           ************ RK(4) ************
+
+def runge_kutta_fourth_order(dy_dx, x0, y0, h, xmax):
+
+        dy_dx (function): The function dy/dx = f(x, y).
+        x0 (float): Initial value of x.
+        y0 (float): Initial value of y corresponding to x0.
+        h (float): Step size.
+        xmax (float): Upper limit of the range of x.
+
+    Returns:
+        list: Lists of x and y values.
+    x_values = [x0]
+    y_values = [y0]
+
+    while x0 < xmax:
+        k1 = h * dy_dx(x0, y0)
+        k2 = h * dy_dx(x0 + h/2, y0 + k1/2)
+        k3 = h * dy_dx(x0 + h/2, y0 + k2/2)
+        k4 = h * dy_dx(x0 + h, y0 + k3)
+
+        y0 += (k1 + 2*k2 + 2*k3 + k4) / 6
+        x0 += h
+        x_values.append(x0)
+        y_values.append(y0)
+
+    return x_values, y_values
+
+for x, y in zip(x_values, y_values):
+    print(f"x = {x:.2f}, y = {y:.6f}")
+
+
+
+                                      ***** BISECTION METHOD *****
+def f(x):
+    return x**3 - x - 2
+
+def bisection(a, b, tol):
+    if f(a) * f(b) >= 0:
+        print("Bisection method fails.")
+        return None
+
+    c = a
+    while (b - a) / 2.0 > tol:
+        c = (a + b) / 2.0
+        if f(c) == 0:
+            break
+        elif f(c) * f(a) < 0:
+            b = c
+        else:
+            a = c
+    return c
+
+root = bisection(a, b, tol)
+if root is not None:
+    print(f"The root is: {root:.5f}")
+
+
+                                        ***** NEWTON-RAPHSON METHOD *****
+def f(x):
+    return x**3 - 2*x - 5
+
+def f_prime(x):
+    return 3*x**2 - 2
+
+def newton_raphson(x0, tol, max_iter):
+    "Newton-Raphson method for finding roots of a real-valued function"
+    
+    x0 : float : Initial guess
+    tol : float : Tolerance for convergence
+    max_iter : int : Maximum number of iterations
+    
+    returns:
+    float : Approximated root
+    for i in range(max_iter):
+        fx = f(x0)
+        fpx = f_prime(x0)
+        
+        if fpx == 0:
+            print("Zero derivative. No solution found")
+            return None
+        
+        x1 = x0 - fx / fpx
+        
+        if abs(x1 - x0) < tol:
+            print(f"Converged in {i+1} iterations.")
+            return x1
+        
+        x0 = x1
+    
+    print("Maximum iterations reached. No solution found")
+    return None
+
+root = newton_raphson(initial_guess, tolerance, max_iterations)
+if root is not None:
+    print(f"Root found: {root}")
+    print(f"f({root}) = {f(root)}")
+else:
+    print("Root not found.")
+
+
+                                  ***** REGULA FALSI(FALSE POSITION) *****
+def f(x):
+    return x**3 - x - 2  
+
+def regula_falsi(a, b, tol, max_iter):
+    if f(a) * f(b) >= 0:
+        print("The given interval does not satisfy the criteria for the Regula Falsi method.")
+        return None
+
+    for i in range(max_iter):
+        c = b - (f(b) * (b - a)) / (f(b) - f(a))
+
+        if abs(f(c)) < tol:
+            print(f"Root found at x = {c} after {i+1} iterations")
+            return c
+
+        if f(c) * f(a) < 0:
+            b = c
+        else:
+            a = c
+
+    print("Maximum iterations reached without convergence.")
+    return None
+
+root = regula_falsi(a, b, tol, max_iter)
+if root is not None:
+    print(f"Root: {root}")
+
+                                             ***** SECANT METHOD *****
+
+def secant_method(f, x0, x1, tol=1e-6, max_iter=100):
+
+    f : function
+    x0 : float 1st guess
+    x1 : float 2nd guess
+    tol : float tolerance
+    max_iter : int
+
+    returns:
+    x : float
+    for i in range(max_iter):
+        if abs(f(x1) - f(x0)) < tol:
+            print("Warning: Denominator is too small, stopping iteration.")
+            return None
+
+        x2 = x1 - (f(x1) * (x1 - x0)) / (f(x1) - f(x0))
+
+        if abs(x2 - x1) < tol:
+            return x2
+        
+        x0, x1 = x1, x2
+    
+    print("Warning: Maximum number of iterations reached, stopping iteration.")
+    return x1
+
+root = secant_method(f, x0, x1)
+if root is not None:
+    print(f"The root is approximately: {root}")
+else:
+    print("Failed to converge to a root")
+
+
+                                         ******** EULERS METHOD ********
+
+def f(x, y):
+    return x + y  # Example: dy/dx = x + y
+
+def euler_method(f, x0, y0, x_end, h):
+    x = x0
+    y = y0
+    while x <= x_end:
+        print(f"x: {x:.4f}, y: {y:.4f}")
+        y += h * f(x, y)
+        x += h
+
+x0 = 0
+y0 = 1
+x_end = 2
+h = 0.1  
+
+euler_method(f, x0, y0, x_end, h)
+
+                                      ********* LAGRANGE INTERPOLATION *********
+
+import numpy as np
+
+def lagrange_interpolation(x_values, y_values, x):
+        x_values (list): List of x values.
+        y_values (list): List of corresponding y values.
+        x (float): The x value at which to interpolate.
+
+    Returns:
+        float: The interpolated value of y at the given x.
+    n = len(x_values)
+    result = 0.0
+    for i in range(n):
+        term = y_values[i]
+        for j in range(n):
+            if j != i:
+                term *= (x - x_values[j]) / (x_values[i] - x_values[j])
+        result += term
+    return result
+
+# Example usage:
+x_values = [0, 1, 2, 3, 4]
+y_values = [1, 3, 5, 4, 2]
+x = 2.5
+interpolated_y = lagrange_interpolation(x_values, y_values, x)
+print("Interpolated value at x =", x, "is", interpolated_y)
+
+
+                                       ********** NEWTON INTERPOLATION *********
+
+def divided_diff(x, y):
+    n = len(y)
+    coef = [a for a in y]
+    for j in range(1, n):
+        for i in range(n - 1, j - 1, -1):
+            coef[i] = (coef[i] - coef[i - 1]) / (x[i] - x[i - j])
+    return coef
+
+def newton_poly(coef, x_data, x):
+    n = len(coef) - 1
+    p = coef[n]
+    for k in range(1, n + 1):
+        p = coef[n - k] + (x - x_data[n - k]) * p
+    return p
+
+coef = divided_diff(x, y)
+print("Divided Difference Coefficients:", coef)
+print(f"The interpolated value at x = {x_val} is y = {y_val}")
+
+
+                                         ********** GAUSS SIEDEL **********
+import numpy as np
+
+def gauss_seidel(A, b, tolerance=1e-10, max_iterations=1000):
+    n = len(b)
+    x = np.zeros_like(b, dtype=np.double)
+    
+    for iteration in range(max_iterations):
+        x_new = np.copy(x)
+        
+        for i in range(n):
+            s1 = sum(A[i][j] * x_new[j] for j in range(i))
+            s2 = sum(A[i][j] * x[j] for j in range(i + 1, n))
+            x_new[i] = (b[i] - s1 - s2) / A[i][i]
+        
+        if np.allclose(x, x_new, atol=tolerance):
+            break
+        x = x_new
+    return x
+
+solution = gauss_seidel(A, b)
+print("Solution:", solution)
+
+                                       ********** GAUSS JACOBI **********
+import numpy as np
+
+def gauss_jacobi(A, b, tolerance=1e-10, max_iterations=100):
+    n = len(A)
+    x = np.zeros_like(b, dtype=np.float64)
+    x_new = np.zeros_like(x)
+    
+    for k in range(max_iterations):
+        for i in range(n):
+            s1 = np.dot(A[i, :i], x[:i])
+            s2 = np.dot(A[i, i+1:], x[i+1:])
+            x_new[i] = (b[i] - s1 - s2) / A[i, i]
+        
+        if np.linalg.norm(x_new - x, ord=np.inf) < tolerance:
+            return x_new, k+1
+        x = x_new.copy()
+    
+    raise Exception(f"Solution did not converge within {max_iterations} iterations")
+
+    
+    solution, iterations = gauss_jacobi(A, b)
+    print("Solution:", solution)
+    print("Iterations:", iterations)
+
+
+
+
+
+
+
+
+
+
+                                      
+
+
+                                      
